@@ -1,0 +1,55 @@
+# render.yaml — Render Blueprint для VibeRoll
+# Деплой: Dashboard → New → Blueprint → выбрать репозиторий с этим файлом.
+# Поднимает Docker-web-сервис (с ffmpeg из Dockerfile) и Key Value (Redis).
+#
+# Документация: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: viberoll
+    runtime: docker          # нужен Docker: на нативном рантайме Render нет ffmpeg
+    dockerfilePath: ./Dockerfile
+    plan: starter            # free тоже можно, но инстанс засыпает; для теста ок
+    region: frankfurt        # ближе к вам (Saxony); смените при необходимости
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      # --- Redis: подключается автоматически из Key Value инстанса ниже ---
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: viberoll-kv
+          property: connectionString
+      - key: JOB_TTL_SECONDS
+        value: "3600"
+
+      # --- Anthropic (вписать значение в дашборде; sync:false = не из yaml) ---
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: SCRIPT_MODEL
+        value: claude-haiku-4-5
+
+      # --- Видео-провайдер ---
+      - key: VIDEO_PROVIDER
+        value: mock
+      - key: HEYGEN_API_KEY
+        sync: false
+
+      # --- Cloudflare R2 (опционально; заполнить в дашборде) ---
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET
+        sync: false
+      - key: R2_PUBLIC_BASE_URL
+        sync: false
+
+  # --- Redis-совместимый Key Value стор для реестра задач ---
+  - type: keyvalue
+    name: viberoll-kv
+    plan: free               # free не персистит на диск — для TTL-кэша задач ок
+    region: frankfurt
+    ipAllowList: []          # обязательно для Key Value; [] = только приватная сеть
+    maxmemoryPolicy: noeviction

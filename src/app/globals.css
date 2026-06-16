@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { height: 100%; }
+body {
+  background: radial-gradient(1200px 800px at 50% -10%, #1b1030 0%, #0b0b12 60%);
+  color: #f5f5fa;
+  -webkit-font-smoothing: antialiased;
+}

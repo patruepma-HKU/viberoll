@@ -1,0 +1,9 @@
+# Railway / Nixpacks: ensure ffmpeg + a cyrillic-capable font are available.
+[phases.setup]
+nixPkgs = ["nodejs_20", "ffmpeg", "dejavu_fonts"]
+
+[phases.build]
+cmds = ["npm ci", "npm run build"]
+
+[start]
+cmd = "npm run start"
