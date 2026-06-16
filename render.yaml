@@ -8,7 +8,6 @@ services:
     name: viberoll
     runtime: docker          # нужен Docker: на нативном рантайме Render нет ffmpeg
     dockerfilePath: ./Dockerfile
-    plan: starter            # free тоже можно, но инстанс засыпает; для теста ок
     region: frankfurt        # ближе к вам (Saxony); смените при необходимости
     healthCheckPath: /
     autoDeploy: true
